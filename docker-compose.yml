@@ -1,0 +1,48 @@
+# Author: itwye
+# Email : itwye@qq.com
+# Date  : 20180506  
+
+version: '2'
+services:
+  mysql:
+    image: hub.c.163.com/library/mysql:latest
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - /var/lib/docker-mysql:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/my.cnf
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - backend
+    restart: always
+    container_name: mysql
+
+  job:
+    depends_on:
+      - mysql
+    build: ./job
+    ports:
+      - 4505:4505
+      - 4506:4506
+      - 8000:8000
+    volumes:
+      - /etc/salt/pki:/etc/salt/pki
+      - /var/cache/salt:/var/cache/salt
+      - /var/log/salt:/var/log/salt
+      - /srv/salt:/srv/salt
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_USER_PASSWORD: 123456
+      MYSQL_SALT_DATABASE: salt
+      MYSQL_JOB_DATABASE: job
+      DJANGO_SUPER_USER: admin:itwye@qq.com:456789
+    networks:
+      - backend
+    restart: always
+    container_name: job
+
+networks:
+  backend:
