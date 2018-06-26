@@ -5,6 +5,10 @@
 FROM ubuntu:14.04
 MAINTAINER itwye<itwye@qq.com>
 
+COPY sources.list /etc/apt/sources.list
+RUN mkdir /root/.pip/
+COPY pip.conf /root/.pip/pip.conf
+
 RUN apt-get update \ 
     && apt-get install -y wget python-pip python-dev mysql-client libldap2-dev libsasl2-dev libmysqlclient-dev \
     && wget -O - http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/2017.7.4/SALTSTACK-GPG-KEY.pub | sudo apt-key add - \
